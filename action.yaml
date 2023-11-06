@@ -58,10 +58,10 @@ runs:
         role-to-assume: ${{ inputs.aws_role_to_assume }}
 
     - name: Read secrets from AWS Secrets Manager into environment variables
-      uses: bitovi/github-actions-aws-secrets-manager@v2.1.0
+      uses: aws-actions/aws-secretsmanager-get-secrets@v1
       with:
-        secrets: ${{ inputs.aws_secret_name }}
-        #parse-json: true
+        secret-ids: ${{ inputs.aws_secret_name }}
+        parse-json-secrets: true
 
     - name: Excecute scripts
       if: ${{ success() }}
