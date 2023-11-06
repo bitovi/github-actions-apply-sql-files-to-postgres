@@ -35,7 +35,7 @@ inputs:
     required: false
   sql_connection_string:
     description: 'Allows overriding default set up connection string to anything else.'
-    default: 'PGPASSWORD=$DB_PASS psql -h $DB_HOST -U $DB_USER -d $DB_NAME -f $file -p $DB_PORT'
+    default: 'PGPASSWORD=$DB_PASS psql -h $DB_HOST -U $DB_USER -d $DB_NAME -p $DB_PORT -f'
     required: false
   dry-run: 
     description: 'Echo the commands to be executed (without passowrd)'
@@ -92,16 +92,16 @@ runs:
         echo $GITHUB_WORKSPACE/${{ inputs.sql_scripts_path }}
         ls -l $GITHUB_WORKSPACE/${{ inputs.sql_scripts_path }}
         echo "::endgroup::"
-        echo "::grou::Applying files"
+        echo "::group::Applying files"
         if [[ ${{ inputs.dry-run }} ]]; then
           for file in $(ls -v $GITHUB_WORKSPACE/${{ inputs.sql_scripts_path }}/*.sql); do
             # Execute each .sql file using PSQL
-            echo $SQL_DRY_RUN
+            echo $SQL_DRY_RUN $file
           done
         else
           for file in $(ls -v $GITHUB_WORKSPACE/${{ inputs.sql_scripts_path }}/*.sql); do
             # Execute each .sql file using PSQL
-            echo ${{ inputs.sql_connection_string }}
+            echo ${{ inputs.sql_connection_string }} $file
           done
         fi
         echo "::endgroup::"
