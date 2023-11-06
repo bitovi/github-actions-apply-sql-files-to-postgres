@@ -72,16 +72,16 @@ runs:
         SNAME: ${{ inputs.aws_secret_name }}
       run: |
         SNAME=$(echo "$SNAME" | tr '[:lower:]' '[:upper:]')
-        DB_HOST="${SNAME}_DB_HOST"
-        DB_HOST=$(eval echo \$$DB_HOST)
-        DB_USER="${SNAME}_DB_USER"
-        DB_USER=$(eval echo \$$DB_USER)
-        DB_NAME="${SNAME}_DB_NAME"
-        DB_NAME=$(eval echo \$$DB_NAME)
-        DB_PORT="${SNAME}_DB_PORT"
-        DB_PORT=$(eval echo \$$DB_PORT)
-        DB_PASS="${SNAME}_DB_PASS"
-        DB_PASS=$(eval echo \$$DB_PASS)
+        DB_HOST_VAR="${SNAME}_DB_HOST"
+        DB_USER_VAR="${SNAME}_DB_USER"
+        DB_NAME_VAR="${SNAME}_DB_NAME"
+        DB_PORT_VAR="${SNAME}_DB_PORT"
+        DB_PASS_VAR="${SNAME}_DB_PASS"
+        DB_HOST=${!DB_HOST_VAR}
+        DB_USER=${!DB_USER_VAR}
+        DB_NAME=${!DB_NAME_VAR}
+        DB_PORT=${!DB_PORT_VAR}
+        DB_PASS=${!DB_PASS_VAR}
 
         echo "::group::postgresql-client install"  
         sudo apt update -y -q && sudo apt install postgresql-client -y -q
