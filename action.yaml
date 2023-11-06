@@ -30,9 +30,13 @@ inputs:
     description: 'Name of the AWS Secret containing the DB credentials.'
     required: true
   # Repo details
+  sql_scripts_path:
+    description: 'Path containing the sql files. If none defined, will look for files in the root folder.'
+    required: false
   sql_connection_string:
     description: 'Allows overriding default set up connection string to anything else.'
     default: 'PGPASSWORD=$DB_PASS psql -h $DB_HOST -U $DB_USER -d $DB_NAME -f "$file" -p $DB_PORT'
+    required: false
   dry-run: 
     description: 'Echo the commands to be executed (without passowrd)'
     default: true
@@ -80,7 +84,7 @@ jobs:
         if [[ ${{ inputs.dry-run }} ]]; then
           for file in $(ls -v *.sql); do
             # Execute each .sql file using PSQL
-            psql -h $DB_HOST -U $DB_USER -d $DB_NAME -f "$file" -p $DB_PORT)
+            echo psql -h $DB_HOST -U $DB_USER -d $DB_NAME -f "$file" -p $DB_PORT
           done
         else
           for file in $(ls -v *.sql); do
