@@ -1,0 +1,91 @@
+name: 'Deploy Single VM Stackstorm to AWS EC2'
+description: 'Deploy a Single VM Stackstorm to an AWS Virtual Machine (EC2)'
+branding:
+  icon: upload-cloud
+  color: red
+inputs:
+  # Checkout
+  checkout:
+    description: 'Specifies if this action should checkout the code'
+    required: false
+    default: 'true'
+  
+  # AWS
+  aws_access_key_id:
+    description: 'AWS access key ID'
+    required: true
+  aws_secret_access_key:
+    description: 'AWS secret access key'
+    required: true
+  aws_default_region:
+    description: 'AWS default region'
+    default: us-east-1
+    required: false
+  aws_role_to_assume:
+    description: 'AWS Role to assume.'
+    required: false
+
+  # Database secret name
+  aws_secret_name:
+    description: 'Name of the AWS Secret containing the DB credentials.'
+    required: true
+  # Repo details
+  sql_connection_string:
+    description: 'Allows overriding default set up connection string to anything else.'
+    default: 'PGPASSWORD=$DB_PASS psql -h $DB_HOST -U $DB_USER -d $DB_NAME -f "$file" -p $DB_PORT'
+  dry-run: 
+    description: 'Echo the commands to be executed (without passowrd)'
+    default: true
+ 
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    #environment:
+     # name: ${{ github.ref_name }}
+     # url: ${{ steps.deploy.outputs.lb_url }}
+
+    steps:
+    - name: Checkout
+      if: ${{ inputs.checkout == 'true' }}
+      uses: actions/checkout@v3
+
+    - name: Configure AWS Credentials
+      if: ${{ inputs.aws_access_key_id != '' }}
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ inputs.aws_access_key_id }}
+        aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
+        aws-region: ${{ inputs.aws_default_region }}
+        role-to-assume: ${{ inputs.aws_role_to_assume }}
+
+    - name: Read secrets from AWS Secrets Manager into environment variables
+      uses: bitovi/github-actions-aws-secrets-manager@v2.1.0
+      with:
+        secrets: ${{ inputs.aws_secret_name }}
+        parse-json: true
+
+    - name: Excecute scripts}
+      if: ${{ success() }}
+      id: print
+      shell: bash
+      run: |
+        echo "::group::postgresql-client install"  
+        sudo apt update -y -q && sudo apt install postgresql-client -y -q
+        echo "::endgroup::"
+        echo "::group::Listing contents"
+        echo $GITHUB_ACTION_PATH/${{ inputs.sql_scripts_path }}
+        ls -l $GITHUB_ACTION_PATH/${{ inputs.sql_scripts_path }}
+        echo "::endgroup::"
+        echo "::grou::Applying files"
+        if [[ ${{ inputs.dry-run }} ]]; then
+          for file in $(ls -v *.sql); do
+            # Execute each .sql file using PSQL
+            psql -h $DB_HOST -U $DB_USER -d $DB_NAME -f "$file" -p $DB_PORT)
+          done
+        else
+          for file in $(ls -v *.sql); do
+            # Execute each .sql file using PSQL
+            echo $(PGPASSWORD=$DB_PASS psql -h $DB_HOST -U $DB_USER -d $DB_NAME -f "$file" -p $DB_PORT)
+          done
+        fi
+        echo "::endgroup::"
