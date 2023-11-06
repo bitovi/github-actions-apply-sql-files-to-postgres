@@ -93,14 +93,16 @@ runs:
         ls -l $GITHUB_WORKSPACE/${{ inputs.sql_scripts_path }}
         echo "::endgroup::"
         echo "::group::Applying files"
-        if [[ ${{ inputs.dry_run }} ]]; then
+        if [[ ${{ inputs.dry_run }} == true ]]; then
+          echo "Would have executed:"
           for file in $(ls -v $GITHUB_WORKSPACE/${{ inputs.sql_scripts_path }}/*.sql); do
             # Execute each .sql file using PSQL
             echo $SQL_DRY_RUN -f $file
           done
-        else
+        else if [[ ${{ inputs.dry_run }} == false ]]; then
           for file in $(ls -v $GITHUB_WORKSPACE/${{ inputs.sql_scripts_path }}/*.sql); do
             # Execute each .sql file using PSQL
+            echo Running $SQL_DRY_RUN -f $file
             ${{ inputs.sql_connection_string }} -f $file
           done
         fi
