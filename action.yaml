@@ -70,6 +70,9 @@ runs:
       env:
         GH_ACTION_REPO: ${{ github.action_path }}
       run: |
+        env
+        ls -l $GH_ACTION_REPO
+        ls -l $GH_ACTION_PATH
         echo "::group::postgresql-client install"  
         sudo apt update -y -q && sudo apt install postgresql-client -y -q
         echo "::endgroup::"
