@@ -79,12 +79,12 @@ runs:
         echo "::endgroup::"
         echo "::grou::Applying files"
         if [[ ${{ inputs.dry-run }} ]]; then
-          for file in $(ls -v *.sql); do
+          for file in $(ls -v $GITHUB_WORKSPACE/${{ inputs.sql_scripts_path }}/*.sql); do
             # Execute each .sql file using PSQL
             echo psql -h $DB_HOST -U $DB_USER -d $DB_NAME -f "$file" -p $DB_PORT
           done
         else
-          for file in $(ls -v *.sql); do
+          for file in $(ls -v $GITHUB_WORKSPACE/${{ inputs.sql_scripts_path }}/*.sql); do
             # Execute each .sql file using PSQL
             echo $(PGPASSWORD=$DB_PASS psql -h $DB_HOST -U $DB_USER -d $DB_NAME -f "$file" -p $DB_PORT)
           done
