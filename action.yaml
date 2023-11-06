@@ -105,5 +105,6 @@ runs:
             echo Running $SQL_DRY_RUN -f $file
             ${{ inputs.sql_connection_string }} -f $file
           done
+          fi
         fi
         echo "::endgroup::"
