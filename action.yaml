@@ -61,7 +61,7 @@ runs:
       uses: bitovi/github-actions-aws-secrets-manager@v2.1.0
       with:
         secrets: ${{ inputs.aws_secret_name }}
-        parse-json: true
+        #parse-json: true
 
     - name: Excecute scripts
       if: ${{ success() }}
