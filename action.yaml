@@ -71,7 +71,7 @@ runs:
         GH_ACTION_REPO: ${{ github.action_path }}
         SNAME: ${{ inputs.aws_secret_name }}
       run: |
-        SNAME=$(echo "$SNAME" | tr '[:lower:]' '[:upper:]')
+        SNAME=$(echo "$SNAME" | tr '[:lower:]' '[:upper:]' |  tr '-' '_')
         DB_HOST_VAR="${SNAME}_DB_HOST"
         DB_USER_VAR="${SNAME}_DB_USER"
         DB_NAME_VAR="${SNAME}_DB_NAME"
