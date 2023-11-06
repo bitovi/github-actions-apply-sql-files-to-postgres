@@ -70,15 +70,12 @@ runs:
       env:
         GH_ACTION_REPO: ${{ github.action_path }}
       run: |
-        env
-        ls -l $GH_ACTION_REPO
-        ls -l $GH_ACTION_PATH
         echo "::group::postgresql-client install"  
         sudo apt update -y -q && sudo apt install postgresql-client -y -q
         echo "::endgroup::"
         echo "::group::Listing contents"
-        echo $GH_ACTION_REPO/${{ inputs.sql_scripts_path }}
-        ls -l $GH_ACTION_REPO/${{ inputs.sql_scripts_path }}
+        echo $GITHUB_WORKSPACE/${{ inputs.sql_scripts_path }}
+        ls -l $GITHUB_WORKSPACE/${{ inputs.sql_scripts_path }}
         echo "::endgroup::"
         echo "::grou::Applying files"
         if [[ ${{ inputs.dry-run }} ]]; then
