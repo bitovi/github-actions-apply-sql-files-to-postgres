@@ -40,14 +40,9 @@ inputs:
   dry-run: 
     description: 'Echo the commands to be executed (without passowrd)'
     default: true
- 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    #environment:
-     # name: ${{ github.ref_name }}
-     # url: ${{ steps.deploy.outputs.lb_url }}
 
+runs:
+    using: 'composite'
     steps:
     - name: Checkout
       if: ${{ inputs.checkout == 'true' }}
@@ -68,7 +63,7 @@ jobs:
         secrets: ${{ inputs.aws_secret_name }}
         parse-json: true
 
-    - name: Excecute scripts}
+    - name: Excecute scripts
       if: ${{ success() }}
       id: print
       shell: bash
