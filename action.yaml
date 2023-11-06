@@ -71,6 +71,7 @@ runs:
         GH_ACTION_REPO: ${{ github.action_path }}
         SNAME: ${{ inputs.aws_secret_name }}
       run: |
+        echo "::group::Translating variables ..."  
         SNAME=$(echo "$SNAME" | tr '[:lower:]' '[:upper:]' |  tr '-' '_')
         DB_HOST_VAR="${SNAME}_DB_HOST"
         DB_USER_VAR="${SNAME}_DB_USER"
@@ -82,8 +83,9 @@ runs:
         DB_NAME=${!DB_NAME_VAR}
         DB_PORT=${!DB_PORT_VAR}
         DB_PASS=${!DB_PASS_VAR}
-
-        echo "::group::postgresql-client install"  
+        SQL_DRY_RUN=$(echo "${{ inputs.sql_connection_string }}" | awk -F 'psql -h ' '{print "psql -h "$2}')
+        echo "::endgroup::"
+        echo "::group::Postgres client install"  
         sudo apt update -y -q && sudo apt install postgresql-client -y -q
         echo "::endgroup::"
         echo "::group::Listing contents"
