@@ -35,7 +35,7 @@ inputs:
     required: false
   sql_connection_string:
     description: 'Allows overriding default set up connection string to anything else.'
-    default: "PGUSER=$DB_USER PGPASSWORD=$DB_PASS PGHOST=$DB_HOST PGPORT=$DB_PORT PGDATABASE=$DB_NAME psql "
+    default: "PGUSER=${DB_USER} PGPASSWORD=${DB_PASS} PGHOST=${DB_HOST} PGPORT=${DB_PORT} PGDATABASE=${DB_NAME} psql"
     required: false
   dry_run: 
     description: 'Echo the commands to be executed (without passowrd)'
@@ -94,12 +94,12 @@ runs:
         echo "::group::Applying files"
         if [[ ${{ inputs.dry_run }} == true ]]; then
           echo "Would have executed:"
-          for file in $(ls -v $GITHUB_WORKSPACE/${{ inputs.sql_scripts_path }}/*.sql); do
+          for file in $(ls -l $GITHUB_WORKSPACE/${{ inputs.sql_scripts_path }}/*.sql); do
             # Execute each .sql file using PSQL
-            echo "${{ inputs.sql_connection_string }} -f $file"
+            echo ${{ inputs.sql_connection_string }} -f $file
           done
         else if [[ ${{ inputs.dry_run }} == false ]]; then
-          for file in $(ls -v $GITHUB_WORKSPACE/${{ inputs.sql_scripts_path }}/*.sql); do
+          for file in $(ls -l $GITHUB_WORKSPACE/${{ inputs.sql_scripts_path }}/*.sql); do
             # Execute each .sql file using PSQL
             echo Running ${{ inputs.sql_connection_string }} -f $file
             "${{ inputs.sql_connection_string }} -f $file"
