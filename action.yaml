@@ -35,7 +35,7 @@ inputs:
     required: false
   sql_connection_string:
     description: 'Allows overriding default set up connection string to anything else.'
-    default: "set PGPASSWORD=${DB_PASS} && /usr/bin/psql -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USER} -d ${DB_NAME}"
+    default: "PGPASSWORD=${DB_PASSWORD} /usr/bin/psql -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USER} -d ${DB_NAME}"
     required: false
   dry_run: 
     description: 'Echo the commands to be executed (without passowrd)'
@@ -77,12 +77,12 @@ runs:
         DB_USER_VAR="${SNAME}_DB_USER"
         DB_NAME_VAR="${SNAME}_DB_NAME"
         DB_PORT_VAR="${SNAME}_DB_PORT"
-        DB_PASS_VAR="${SNAME}_DB_PASS"
+        DB_PASS_VAR="${SNAME}_DB_PASSWORD"
         DB_HOST=${!DB_HOST_VAR}
         DB_USER=${!DB_USER_VAR}
         DB_NAME=${!DB_NAME_VAR}
         DB_PORT=${!DB_PORT_VAR}
-        DB_PASS=${!DB_PASS_VAR}
+        DB_PASSWORD=${!DB_PASS_VAR}
         echo "::endgroup::"
         echo "::group::Postgres client install"  
         sudo apt update -y -q && sudo apt install postgresql-client -y -q
