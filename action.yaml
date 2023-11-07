@@ -35,7 +35,7 @@ inputs:
     required: false
   sql_connection_string:
     description: 'Allows overriding default set up connection string to anything else.'
-    default: "PGPASSWORD=${DB_PASS} /usr/bin/psql -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USER} -d ${DB_NAME}"
+    default: "set PGPASSWORD=${DB_PASS} && /usr/bin/psql -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USER} -d ${DB_NAME}"
     required: false
   dry_run: 
     description: 'Echo the commands to be executed (without passowrd)'
