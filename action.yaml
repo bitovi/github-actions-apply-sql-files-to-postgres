@@ -101,8 +101,9 @@ runs:
         else if [[ ${{ inputs.dry_run }} == false ]]; then
           for file in $(ls *.sql); do
             # Execute each .sql file using PSQL
-            echo Running ${{ inputs.sql_connection_string }} -f ./$file
-            "${{ inputs.sql_connection_string }} -f ./$file"
+            echo Running ${{ inputs.sql_connection_string }} -f $GITHUB_WORKSPACE/${{ inputs.sql_scripts_path }}/$file
+            ${{ inputs.sql_connection_string }} -l
+            ${{ inputs.sql_connection_string }} -S -f $GITHUB_WORKSPACE/${{ inputs.sql_scripts_path }}/$file
           done
           fi
         fi
