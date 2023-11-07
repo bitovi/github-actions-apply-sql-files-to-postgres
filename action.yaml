@@ -35,7 +35,7 @@ inputs:
     required: false
   sql_connection_string:
     description: 'Allows overriding default set up connection string to anything else.'
-    default: 'PGUSER=$DB_USER PGPASSWORD=$DB_PASS PGHOST=$DB_HOST PGPORT=$DB_PORT PGDATABASE=$DB_NAME psql '
+    default: "PGUSER=$DB_USER PGPASSWORD=$DB_PASS PGHOST=$DB_HOST PGPORT=$DB_PORT PGDATABASE=$DB_NAME psql "
     required: false
   dry_run: 
     description: 'Echo the commands to be executed (without passowrd)'
@@ -83,7 +83,6 @@ runs:
         DB_NAME=${!DB_NAME_VAR}
         DB_PORT=${!DB_PORT_VAR}
         DB_PASS=${!DB_PASS_VAR}
-        SQL_DRY_RUN=$(echo "${{ inputs.sql_connection_string }}" | awk -F 'psql -h ' '{print "psql -h "$2}')
         echo "::endgroup::"
         echo "::group::Postgres client install"  
         sudo apt update -y -q && sudo apt install postgresql-client -y -q
@@ -97,12 +96,12 @@ runs:
           echo "Would have executed:"
           for file in $(ls -v $GITHUB_WORKSPACE/${{ inputs.sql_scripts_path }}/*.sql); do
             # Execute each .sql file using PSQL
-            echo "$SQL_DRY_RUN -f $file"
+            echo "${{ inputs.sql_connection_string }} -f $file"
           done
         else if [[ ${{ inputs.dry_run }} == false ]]; then
           for file in $(ls -v $GITHUB_WORKSPACE/${{ inputs.sql_scripts_path }}/*.sql); do
             # Execute each .sql file using PSQL
-            echo Running $SQL_DRY_RUN -f $file
+            echo Running ${{ inputs.sql_connection_string }} -f $file
             "${{ inputs.sql_connection_string }} -f $file"
           done
           fi
