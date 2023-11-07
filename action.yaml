@@ -96,13 +96,13 @@ runs:
           echo "Would have executed:"
           for file in $(ls *.sql); do
             # Execute each .sql file using PSQL
-            echo "${{ inputs.sql_connection_string }} -f $file"
+            echo "${{ inputs.sql_connection_string }} -f ./$file"
           done
         else if [[ ${{ inputs.dry_run }} == false ]]; then
           for file in $(ls *.sql); do
             # Execute each .sql file using PSQL
-            echo Running ${{ inputs.sql_connection_string }} -f $file
-            "${{ inputs.sql_connection_string }} -f $file"
+            echo Running ${{ inputs.sql_connection_string }} -f ./$file
+            "${{ inputs.sql_connection_string }} -f ./$file"
           done
           fi
         fi
