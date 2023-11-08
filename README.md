@@ -2,7 +2,7 @@
 Iterate through .sql files inside a folder using the psql command.
 
 ## Action Summary
-The main purpose of this action is to execute sql script(s) to initialize the Postgres database in an automated way right after creating it using our own [Deploy RDS GitHub Action](https://github.com/bitovi/github-actions-deploy-rds)
+The main purpose of this action is to apply SQL file(s) to initialize the Postgres database in an automated way, right after creating it using our own [Deploy RDS GitHub Action](https://github.com/bitovi/github-actions-deploy-rds)
 
 If you would like to deploy a backend app/service, check out our other actions:
 | Action | Purpose |
@@ -26,6 +26,7 @@ Or, you can hire us for training, consulting, or development. [Set up a free con
 - The following secrets should be added to your GitHub actions secrets:
   - `AWS_ACCESS_KEY_ID`
   - `AWS_SECRET_ACCESS_KEY`
+- A Postgres Database. Could use [This deploy RDS GitHub Action](https://github.com/bitovi/github-actions-deploy-rds) to create one and store the secrets in AWS Secrets Manager.
 
 ## Example usage
 
@@ -54,6 +55,9 @@ jobs:
 ```
 
 ## Customizing
+Setting the variable `aws_secret_name` will fetch a secret from AWS. We expect to find **DB_HOST** **DB_USER** **DB_NAME** **DB_PORT** **DB_PASSWORD** and **DB_NAME**.
+
+Still in the works, the possibility to override those using the variables with the same name. 
 
 ### Inputs
 
