@@ -1,5 +1,5 @@
-name: 'Deploy Single VM Stackstorm to AWS EC2'
-description: 'Deploy a Single VM Stackstorm to an AWS Virtual Machine (EC2)'
+name: 'Apply SQL files to Postgres Database'
+description: 'Iterate through a folder containing SQL files and apply them to a Postgres Database'
 branding:
   icon: upload-cloud
   color: red
@@ -114,6 +114,8 @@ runs:
           for file in $(ls *.sql); do
             # Execute each .sql file using PSQL
             echo "${{ inputs.sql_connection_string }} -f ./$file"
+            echo "Testing connection. Listing databases."
+            ${{ inputs.sql_connection_string }} -l
           done
         else if [[ ${{ inputs.dry_run }} == false ]]; then
           for file in $(ls *.sql); do
