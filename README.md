@@ -1,4 +1,4 @@
-# GitHub actions apply sql scripts to Postgres
+# GitHub Actions apply SQL files to Postgres Database
 Iterate through .sql files inside a folder using the psql command.
 
 ## Action Summary
