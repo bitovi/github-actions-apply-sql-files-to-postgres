@@ -1,0 +1,128 @@
+name: 'Apply SQL files to Postgres Database'
+description: 'Iterate through a folder containing SQL files and apply them to a Postgres Database'
+branding:
+  icon: upload-cloud
+  color: red
+inputs:
+  # Checkout
+  checkout:
+    description: 'Specifies if this action should checkout the code'
+    required: false
+    default: 'true'
+  
+  # AWS
+  aws_access_key_id:
+    description: 'AWS access key ID'
+    required: true
+  aws_secret_access_key:
+    description: 'AWS secret access key'
+    required: true
+  aws_default_region:
+    description: 'AWS default region'
+    default: us-east-1
+    required: false
+  aws_role_to_assume:
+    description: 'AWS Role to assume.'
+    required: false
+
+  # Database secret name
+  aws_secret_name:
+    description: 'Name of the AWS Secret containing the DB credentials.'
+    required: true
+  db_host:
+    description: 'Defines the one to use in the connection string.'
+    required: false
+  db_port:
+    description: 'Defines the one to use in the connection string.'
+    required: false
+  db_username:
+    description: 'Defines the one to use in the connection string.'
+    required: false
+  db_password:
+    description: 'Defines the one to use in the connection string.'
+    required: false
+  db_name:
+    description: 'Defines the one to use in the connection string.'
+    required: false
+  sql_connection_string:
+    description: 'Allows overriding default set up connection string to anything else.'
+    default: "PGPASSWORD=${DB_PASSWORD} /usr/bin/psql -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USER} -d ${DB_NAME}"
+    required: false
+  dry_run: 
+    description: 'Echo the commands to be executed (without passowrd)'
+    default: true
+
+  # Repo details
+  sql_scripts_path:
+    description: 'Path containing the sql files. If none defined, will look for files in the root folder.'
+    required: false
+
+runs:
+    using: 'composite'
+    steps:
+    - name: Checkout
+      if: ${{ inputs.checkout == 'true' }}
+      uses: actions/checkout@v3
+
+    - name: Configure AWS Credentials
+      if: ${{ inputs.aws_access_key_id != '' }}
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ inputs.aws_access_key_id }}
+        aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
+        aws-region: ${{ inputs.aws_default_region }}
+        role-to-assume: ${{ inputs.aws_role_to_assume }}
+
+    - name: Read secrets from AWS Secrets Manager into environment variables
+      uses: aws-actions/aws-secretsmanager-get-secrets@v1
+      with:
+        secret-ids: ${{ inputs.aws_secret_name }}
+        parse-json-secrets: true
+
+    - name: Excecute scripts
+      if: ${{ success() }}
+      id: print
+      shell: bash
+      env:
+        GH_ACTION_REPO: ${{ github.action_path }}
+        SNAME: ${{ inputs.aws_secret_name }}
+      run: |
+        echo "::group::Translating variables ..." 
+        SNAME=$(echo "$SNAME" | tr '[:lower:]' '[:upper:]' |  tr '-' '_')
+        DB_HOST_VAR="${SNAME}_DB_HOST"
+        DB_USER_VAR="${SNAME}_DB_USER"
+        DB_NAME_VAR="${SNAME}_DB_NAME"
+        DB_PORT_VAR="${SNAME}_DB_PORT"
+        DB_PASS_VAR="${SNAME}_DB_PASSWORD"
+        DB_HOST=${!DB_HOST_VAR}
+        DB_USER=${!DB_USER_VAR}
+        DB_NAME=${!DB_NAME_VAR}
+        DB_PORT=${!DB_PORT_VAR}
+        DB_PASSWORD=${!DB_PASS_VAR}
+        echo "::endgroup::"
+        echo "::group::Postgres client install"  
+        sudo apt update -y -q && sudo apt install postgresql-client -y -q
+        echo "::endgroup::"
+        echo "::group::Listing contents"
+        echo $GITHUB_WORKSPACE/${{ inputs.sql_scripts_path }}
+        cd $GITHUB_WORKSPACE/${{ inputs.sql_scripts_path }}
+        ls -l *.sql
+        echo "::endgroup::"
+        echo "::group::Applying files"
+        if [[ ${{ inputs.dry_run }} == true ]]; then
+          echo "Would have executed:"
+          for file in $(ls *.sql); do
+            # Execute each .sql file using PSQL
+            echo "${{ inputs.sql_connection_string }} -f ./$file"
+            echo "Testing connection. Listing databases."
+            ${{ inputs.sql_connection_string }} -l
+          done
+        else if [[ ${{ inputs.dry_run }} == false ]]; then
+          for file in $(ls *.sql); do
+            # Execute each .sql file using PSQL
+            echo Running ${{ inputs.sql_connection_string }} -f $GITHUB_WORKSPACE/${{ inputs.sql_scripts_path }}/$file
+            ${{ inputs.sql_connection_string }} -f "$GITHUB_WORKSPACE/${{ inputs.sql_scripts_path }}/$file"
+          done
+          fi
+        fi
+        echo "::endgroup::"
