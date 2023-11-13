@@ -28,28 +28,28 @@ inputs:
   # Database secret name
   aws_secret_name:
     description: 'Name of the AWS Secret containing the DB credentials.'
-    required: true
+    required: false
   db_host:
-    description: 'Defines the one to use in the connection string.'
+    description: 'Defines the db_host to use in the connection string.'
     required: false
   db_port:
-    description: 'Defines the one to use in the connection string.'
-    required: false
-  db_username:
-    description: 'Defines the one to use in the connection string.'
-    required: false
-  db_password:
-    description: 'Defines the one to use in the connection string.'
+    description: 'Defines the db_port to use in the connection string.'
     required: false
   db_name:
-    description: 'Defines the one to use in the connection string.'
+    description: 'Defines the db_name to use in the connection string.'
+    required: false
+  db_username:
+    description: 'Defines the db_username to use in the connection string.'
+    required: false
+  db_password:
+    description: 'Defines the db_password to use in the connection string.'
     required: false
   sql_connection_string:
     description: 'Allows overriding default set up connection string to anything else.'
     default: "PGPASSWORD=${DB_PASSWORD} /usr/bin/psql -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USER} -d ${DB_NAME}"
     required: false
   dry_run: 
-    description: 'Echo the commands to be executed (without passowrd)'
+    description: 'Echo the commands to be executed (without passowrd). Will run a list command to test connection.'
     default: true
 
   # Repo details
@@ -86,43 +86,12 @@ runs:
       env:
         GH_ACTION_REPO: ${{ github.action_path }}
         SNAME: ${{ inputs.aws_secret_name }}
-      run: |
-        echo "::group::Translating variables ..." 
-        SNAME=$(echo "$SNAME" | tr '[:lower:]' '[:upper:]' |  tr '-' '_')
-        DB_HOST_VAR="${SNAME}_DB_HOST"
-        DB_USER_VAR="${SNAME}_DB_USER"
-        DB_NAME_VAR="${SNAME}_DB_NAME"
-        DB_PORT_VAR="${SNAME}_DB_PORT"
-        DB_PASS_VAR="${SNAME}_DB_PASSWORD"
-        DB_HOST=${!DB_HOST_VAR}
-        DB_USER=${!DB_USER_VAR}
-        DB_NAME=${!DB_NAME_VAR}
-        DB_PORT=${!DB_PORT_VAR}
-        DB_PASSWORD=${!DB_PASS_VAR}
-        echo "::endgroup::"
-        echo "::group::Postgres client install"  
-        sudo apt update -y -q && sudo apt install postgresql-client -y -q
-        echo "::endgroup::"
-        echo "::group::Listing contents"
-        echo $GITHUB_WORKSPACE/${{ inputs.sql_scripts_path }}
-        cd $GITHUB_WORKSPACE/${{ inputs.sql_scripts_path }}
-        ls -l *.sql
-        echo "::endgroup::"
-        echo "::group::Applying files"
-        if [[ ${{ inputs.dry_run }} == true ]]; then
-          echo "Would have executed:"
-          for file in $(ls *.sql); do
-            # Execute each .sql file using PSQL
-            echo "${{ inputs.sql_connection_string }} -f ./$file"
-            echo "Testing connection. Listing databases."
-            ${{ inputs.sql_connection_string }} -l
-          done
-        else if [[ ${{ inputs.dry_run }} == false ]]; then
-          for file in $(ls *.sql); do
-            # Execute each .sql file using PSQL
-            echo Running ${{ inputs.sql_connection_string }} -f $GITHUB_WORKSPACE/${{ inputs.sql_scripts_path }}/$file
-            ${{ inputs.sql_connection_string }} -f "$GITHUB_WORKSPACE/${{ inputs.sql_scripts_path }}/$file"
-          done
-          fi
-        fi
-        echo "::endgroup::"
+        DB_HOST: ${{ inputs.db_host }}
+        DB_PORT: ${{ inputs.db_port }}
+        DB_NAME: ${{ inputs.db_name }}
+        DB_USERNAME: ${{ inputs.db_username }}
+        DB_PASSWORD: ${{ inputs.db_password }}
+        CONN_STR: ${{ inputs.sql_connection_string }}
+        DRY_RUN: ${{ inputs.dry_run }}
+        SCRIPTS_PATH: ${{ inputs.sql_scripts_path }}
+      run: deploy.sh
