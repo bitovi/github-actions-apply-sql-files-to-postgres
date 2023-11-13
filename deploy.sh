@@ -44,6 +44,7 @@ if [ "$DRY_RUN" ]; then
     # Execute each .sql file using PSQL
     echo "${CONN_STR} -f ./$file"
     echo "Testing connection. Listing databases."
+    /usr/bin/psql --help
     ${CONN_STR} -l
   done
 else if ![ "$DRY_RUN" ]; then
