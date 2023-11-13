@@ -44,7 +44,7 @@ if [ "$DRY_RUN" ]; then
     # Execute each .sql file using PSQL
     echo "${CONN_STR} -f ./$file"
     echo "Testing connection. Listing databases."
-    ${CONN_STR} -l
+    "${CONN_STR} -l"
   done
 else if ![ "$DRY_RUN" ]; then
   for file in $(ls *.sql); do
