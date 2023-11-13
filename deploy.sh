@@ -11,6 +11,7 @@ echo "::group::Translating variables ..."
 #  CONN_STR: ${{ inputs.sql_connection_string }}
 #  DRY_RUN: ${{ inputs.dry_run }}
 #  SCRIPTS_PATH: ${{ inputs.sql_scripts_path }}
+CONN_STR="${CONN_STR}"
 
 # ()
 if [ -n "$SNAME" ]; then
