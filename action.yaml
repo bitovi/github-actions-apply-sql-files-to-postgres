@@ -94,4 +94,4 @@ runs:
         CONN_STR: ${{ inputs.sql_connection_string }}
         DRY_RUN: ${{ inputs.dry_run }}
         SCRIPTS_PATH: ${{ inputs.sql_scripts_path }}
-      run: deploy.sh
+      run: ./deploy.sh

@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 echo "::group::Translating variables ..." 
 #  GH_ACTION_REPO: ${{ github.action_path }}
 #  SNAME: ${{ inputs.aws_secret_name }}
