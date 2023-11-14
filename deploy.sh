@@ -52,7 +52,7 @@ else if ![ "$DRY_RUN" ]; then
   for file in $(ls *.sql); do
     # Execute each .sql file using PSQL
     echo Running $CONN_STR -f $GITHUB_WORKSPACE/$SCRIPTS_PATH/$file
-    $CONN_STR -f $GITHUB_WORKSPACE/$SCRIPTS_PATH/$file
+    ${CONN_STR} -f $GITHUB_WORKSPACE/$SCRIPTS_PATH/$file
   done
   fi
 fi
