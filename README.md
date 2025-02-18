@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest # Or self-hosted 
     steps:
       - name: Initialize RDS Postgres DB
-        uses: bitovi/github-actions-apply-sql-scripts-to-postgres@v0.0.1
+        uses: bitovi/github-actions-apply-sql-scripts-to-postgres@v0
         with:
             aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
             aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -90,11 +90,11 @@ The following inputs can be used as `steps.with` keys:
 | `aws_secret_name` | String | AWS Secrets Manager secret name to pull database variables from. |
 | `db_host` | String | Database hostname to connect to. Should be publicly accessible if not running in a self-hosted GH Runner.` |
 | `db_port` | String | Database port to connect to. |
-| `db_username` | String | Defines the username to use for connecting to the database. |
-| `db_password` | String | Defines the username to use for connecting to the database.  |
 | `db_name` | String | Define the database name to use. |
-| `sql_connection_string` | String | Defaults to `PGPASSWORD=${DB_PASSWORD} /usr/bin/psql -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USER} -d ${DB_NAME}`
-| `dry_run` | Boolean | Echo the commands to be executed and does nothing to the database. Will test connection by listing the DB's. Defaults to `false` |
+| `db_username` | String | Defines the username to use for connecting to the database. |
+| `db_password` | String | Defines the password to use for connecting to the database.  |
+| `sql_connection_string` | String | Defaults to `PGPASSWORD=${DB_PASSWORD} /usr/bin/psql -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USER} -d ${DB_NAME}`. |
+| `dry_run` | Boolean | Echo the commands to be executed and does nothing to the database. **Will test connection by listing the DB's.** (So carefull with the `sql_connection_string`. Defaults to `true`. |
 <br/>
 
 ## Contributing
