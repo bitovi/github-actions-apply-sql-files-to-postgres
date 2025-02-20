@@ -11,7 +11,6 @@ echo "::group::Translating variables ..."
 #  CONN_STR: ${{ inputs.sql_connection_string }}
 #  DRY_RUN: ${{ inputs.dry_run }}
 #  SCRIPTS_PATH: ${{ inputs.sql_scripts_path }}
-CONN_STR="${CONN_STR}"
 
 # ()
 if [ -n "$SNAME" ]; then
@@ -29,6 +28,8 @@ fi
 [ -z "$DB_USERNAME" ] && DB_USERNAME=${!DB_USER_VAR}
 [ -z "$DB_PASSWORD" ] && DB_PASSWORD=${!DB_PASS_VAR}
 echo "::endgroup::"
+CONN_STR="${CONN_STR}"
+echo "DB_NAME=${DB_NAME}, DB_USERNAME=${DB_USERNAME}"
 
 echo "::group::Postgres client install"  
 sudo apt update -y -q && sudo apt install postgresql-client -y -q
