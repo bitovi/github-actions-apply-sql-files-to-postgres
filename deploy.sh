@@ -53,8 +53,9 @@ fi
 if [[ "$DRY_RUN" == "false" ]]; then
   for file in $(ls *.sql); do
     # Execute each .sql file using PSQL
-    echo Running $CONN_STR -f $GITHUB_WORKSPACE/$SCRIPTS_PATH/$file
-    eval "${CONN_STR} -f $GITHUB_WORKSPACE/$SCRIPTS_PATH/$file"
+    # $GITHUB_WORKSPACE/$SCRIPTS_PATH/
+    echo Running $CONN_STR -f ./$file
+    "${CONN_STR} -f ./$file"
   done
 fi
 echo "::endgroup::"
