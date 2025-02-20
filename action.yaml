@@ -62,11 +62,11 @@ runs:
     steps:
     - name: Checkout
       if: ${{ inputs.checkout == 'true' }}
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Configure AWS Credentials
       if: ${{ inputs.aws_access_key_id != '' }}
-      uses: aws-actions/configure-aws-credentials@v2
+      uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-access-key-id: ${{ inputs.aws_access_key_id }}
         aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
@@ -74,7 +74,7 @@ runs:
         role-to-assume: ${{ inputs.aws_role_to_assume }}
 
     - name: Read secrets from AWS Secrets Manager into environment variables
-      uses: aws-actions/aws-secretsmanager-get-secrets@v1
+      uses: aws-actions/aws-secretsmanager-get-secrets@v2
       with:
         secret-ids: ${{ inputs.aws_secret_name }}
         parse-json-secrets: true
