@@ -39,7 +39,7 @@ cd $GITHUB_WORKSPACE/$SCRIPTS_PATH
 ls -l *.sql
 echo "::endgroup::"
 echo "::group::Applying files"
-if [ "$DRY_RUN" ]; then
+if [[ "$DRY_RUN" != "false" ]]; then
   echo "Would have executed:"
   for file in $(ls *.sql); do
     # Execute each .sql file using PSQL
@@ -48,12 +48,12 @@ if [ "$DRY_RUN" ]; then
     /usr/bin/psql --help
     ${CONN_STR} -l
   done
-else if ![ "$DRY_RUN" ]; then
+fi
+if [[ "$DRY_RUN" == "false" ]]; then
   for file in $(ls *.sql); do
     # Execute each .sql file using PSQL
     echo Running $CONN_STR -f $GITHUB_WORKSPACE/$SCRIPTS_PATH/$file
-    ${CONN_STR} -f $GITHUB_WORKSPACE/$SCRIPTS_PATH/$file
+    eval "${CONN_STR} -f $GITHUB_WORKSPACE/$SCRIPTS_PATH/$file"
   done
-  fi
 fi
 echo "::endgroup::"
